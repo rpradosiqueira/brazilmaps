@@ -37,7 +37,7 @@ devtools::install_github("rpradosiqueira/brazilmaps")
 
 Let's assume that we want to plot the brazilian municipalities of the Midwest Region. To do this simply execute:
 
-```{r}
+```{r midwest-cities}
 library(brazilmaps)
 
 # Get de map
