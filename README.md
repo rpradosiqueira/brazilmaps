@@ -42,6 +42,4 @@ plot_brmap(midwest_cities)
 #> Regions defined for each Polygons
 ```
 
-![](README-unnamed-chunk-4-1.png)
-
 I'm preparing a vignette with more examples that will come soon.
