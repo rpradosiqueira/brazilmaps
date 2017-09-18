@@ -32,6 +32,24 @@ of the maps from this package. The function
 returns a ggplot object so it can be edited
 easily.
 }
+\examples{
+\dontrun{
+data("pop2017")
+map_sul <- get_brmap(geo = "City", geo.filter = list(Region = 4))
+mapa1 <- plot_brmap(map_sul,
+                    data_to_join = pop2017,
+                    join_by = c("City" = "mun"),
+                    var = "pop2017")
+mapa1
+
+# Output is ggplot object so it can be extended
+# with any number of ggplot layers
+library(ggplot2)
+mapa1 +
+  labs(title = "População Municipal 2017 - Região Sul")
+}
+
+}
 \seealso{
 \code{\link{get_brmap}}, \code{\link[ggplot2]{theme}}
 }

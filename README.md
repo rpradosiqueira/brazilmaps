@@ -27,15 +27,11 @@ Let's assume that we want to plot the brazilian municipalities of the Midwest Re
 
 ``` r
 library(brazilmaps)
-#> 
-#> Attaching package: 'brazilmaps'
-#> The following object is masked from 'package:stats':
-#> 
-#>     filter
 
 # Get de map
 midwest_cities <- get_brmap(geo = "City",
                             geo.filter = list(Region = 5))
+#> Warning: package 'bindrcpp' was built under R version 3.3.3
 
 # Plot
 plot_brmap(midwest_cities)

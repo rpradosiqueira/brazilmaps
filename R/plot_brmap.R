@@ -28,7 +28,7 @@
 #' mapa1 <- plot_brmap(map_sul,
 #'                     data_to_join = pop2017,
 #'                     join_by = c("City" = "mun"),
-#'                     var = "values)
+#'                     var = "pop2017")
 #' mapa1
 #'
 #' # Output is ggplot object so it can be extended
