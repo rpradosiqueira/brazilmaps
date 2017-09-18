@@ -3,10 +3,10 @@ Type: Package
 Title: Brazilian Maps from Different Geographic Levels
 Version: 0.1.0
 Authors@R: person("Renato", "Prado Siqueira", email = "rpradosiqueira@gmail.com", role = c("aut", "cre"))
-Maintainer: Renato Prado Siqueira <rpradosiqueira@gmail.com>
 Description: Obtain Brazilian map spatial objects of varying region types (e.g. cities, 
     states, microregions, mesoregions). Convenience functions for plotting
     choropleths and working with the geographic codes are also provided.
+Depends: R (>= 3.2.0)
 LazyData: true
 License: GPL-3
 Encoding: UTF-8
@@ -20,3 +20,4 @@ Imports:
     sf,
     sp,
 RoxygenNote: 6.0.1
+Suggests: knitr
