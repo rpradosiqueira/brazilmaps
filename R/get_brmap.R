@@ -12,9 +12,13 @@
 #'                  geo.filter = NULL,
 #'                  class = c("sf", "SpatialPolygonsDataFrame", "data.frame"))
 #' @param geo A string value with geographic levels of interest
-#' @param geo.filter A (named) list object with the specific item of the
+#' @param geo.filter A named list object with the specific item of the
 #'   geographic level or all itens of a determined higher geografic level
 #' @param class The class of the object to be returned
+#' @details
+#' The \code{geo} argument can be one of "Brazil", "Region", "State",
+#' "MesoRegion", "MicroRegion" and "City".
+#' 'geo.filter' lists must be named with the same characters.
 #' @return The function returns a 'sf', 'SpatialPolygonsDataFrame' or 'data.frame'
 #'   object depending of the 'class' argument informed
 #' @author Renato Prado Siqueira \email{<rpradosiqueira@@gmail.com>}
