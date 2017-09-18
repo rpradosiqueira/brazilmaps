@@ -11,7 +11,7 @@ get_brmap(geo = c("Brazil","Region","State","MesoRegion","MicroRegion","City"),
 \arguments{
 \item{geo}{A string value with geographic levels of interest}
 
-\item{geo.filter}{A (named) list object with the specific item of the
+\item{geo.filter}{A named list object with the specific item of the
 geographic level or all itens of a determined higher geografic level}
 
 \item{class}{The class of the object to be returned}
@@ -28,6 +28,11 @@ are from IBGE (Instituto Brasileiro
 de Geografia e Estatística) and
 refers to the administrative
 configurations of 2016.
+}
+\details{
+The \code{geo} argument can be one of "Brazil", "Region", "State",
+"MesoRegion", "MicroRegion" and "City".
+'geo.filter' lists must be named with the same characters.
 }
 \examples{
 \dontrun{

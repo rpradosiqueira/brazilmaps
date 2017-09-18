@@ -1,6 +1,6 @@
 Package: brazilmaps
 Type: Package
-Title: Brazilian maps from diverse geographic levels
+Title: Brazilian Maps from Different Geographic Levels
 Version: 0.1.0
 Authors@R: person("Renato", "Prado Siqueira", email = "rpradosiqueira@gmail.com", role = c("aut", "cre"))
 Maintainer: Renato Prado Siqueira <rpradosiqueira@gmail.com>

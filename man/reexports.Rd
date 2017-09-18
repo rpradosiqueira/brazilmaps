@@ -3,10 +3,6 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{filter}
-\alias{reexports}
-\alias{filter.sf}
-\alias{reexports}
 \alias{plot_sf}
 \title{Objects exported from other packages}
 \keyword{internal}
@@ -15,8 +11,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{filter}}}
-
-  \item{sf}{\code{\link[sf]{filter.sf}}, \code{\link[sf]{plot_sf}}}
+  \item{sf}{\code{\link[sf]{plot_sf}}}
 }}
 
