@@ -10,6 +10,8 @@ Description: Obtain Brazilian map spatial objects of varying region types (e.g. 
 LazyData: true
 License: GPL-3
 Encoding: UTF-8
+URL: http://github.com/rpradosiqueira/brazilmaps
+BugReports: http://github.com/rpradosiqueira/brazilmaps/issues
 Imports:
     dplyr,
     ggplot2,
