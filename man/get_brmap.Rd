@@ -35,12 +35,17 @@ The \code{geo} argument can be one of "Brazil", "Region", "State",
 'geo.filter' lists must be named with the same characters.
 }
 \examples{
-\dontrun{
 # Retrieving the map from the State of Rio de Janeiro
 rio_map <- get_brmap(geo = "State",
                      geo.filter = list(State = 33),
                      class = "sf")
-}
+plot(rio_map)
+
+# Obtaining the municipalities maps from Midwest Region
+cities_map <- get_brmap(geo = "City",
+                        geo.filter = list(Region = 5),
+                        class = "sf")
+plot(cities_map)
 
 }
 \seealso{
