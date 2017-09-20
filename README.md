@@ -31,13 +31,9 @@ library(brazilmaps)
 # Get de map
 midwest_cities <- get_brmap(geo = "City",
                             geo.filter = list(Region = 5))
-#> Warning: package 'bindrcpp' was built under R version 3.3.3
 
 # Plot
 plot_brmap(midwest_cities)
-#> Regions defined for each Polygons
 ```
-
-![](README-midwest-cities-1.png)
 
 I'm preparing a vignette with more examples that will come soon.
