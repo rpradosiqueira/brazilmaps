@@ -6,6 +6,9 @@ output:
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/brazilmaps)](https://CRAN.R-project.org/package=brazilmaps)
+[![CRAC\_Downloads](https://cranlogs.r-pkg.org/badges/grand-total/brazilmaps)](https://CRAN.R-project.org/package=brazilmaps)
+
 ```{r, echo = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -37,7 +40,7 @@ devtools::install_github("rpradosiqueira/brazilmaps")
 
 Let's assume that we want to plot the brazilian municipalities of the Midwest Region. To do this simply execute:
 
-```{r midwest-cities, eval=FALSE}
+```{r midwest-cities}
 library(brazilmaps)
 
 # Get de map
