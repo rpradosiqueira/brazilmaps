@@ -3,7 +3,5 @@
 export(get_brmap)
 export(join_data)
 export(plot_brmap)
-export(plot_sf)
 importFrom(magrittr,"%>%")
 importFrom(methods,as)
-importFrom(sf,plot_sf)

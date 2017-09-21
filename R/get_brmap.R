@@ -24,17 +24,17 @@
 #' @author Renato Prado Siqueira \email{<rpradosiqueira@@gmail.com>}
 #' @seealso \code{\link{join_data}}
 #' @examples
-#' # Retrieving the map from the State of Rio de Janeiro
+#' ## Retrieving the map from the State of Rio de Janeiro
 #' rio_map <- get_brmap(geo = "State",
 #'                      geo.filter = list(State = 33),
 #'                      class = "sf")
-#' plot(rio_map)
+#' plot_brmap(rio_map)
 #'
-#' # Obtaining the municipalities maps from Midwest Region
+#' ## Obtaining the municipalities maps from Midwest Region
 #' cities_map <- get_brmap(geo = "City",
 #'                         geo.filter = list(Region = 5),
 #'                         class = "sf")
-#' plot(cities_map)
+#' plot_brmap(cities_map)
 #'
 #' @keywords IBGE shapefile geographic levels spatial
 #' @importFrom methods as

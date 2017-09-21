@@ -22,7 +22,7 @@
 #' @seealso \code{\link{get_brmap}}, \code{\link[ggplot2]{theme}}
 #'
 #' @examples
-#' \dontrun{
+#' ## Plotting population estimates (2017) of the South Region
 #' data("pop2017")
 #' map_sul <- get_brmap(geo = "City", geo.filter = list(Region = 4))
 #' mapa1 <- plot_brmap(map_sul,
@@ -36,7 +36,13 @@
 #' library(ggplot2)
 #' mapa1 +
 #'   labs(title = "População Municipal 2017 - Região Sul")
-#' }
+#'
+#'
+#' # Only displaying the microregions of the state of Sao Paulo
+#' map_sp_micro <- get_brmap(geo = "MicroRegion",
+#'                           geo.filter = list(State = 35),
+#'                           class = "SpatialPolygonsDataFrame")
+#' plot_brmap(map_sp_micro)
 #'
 #' @export
 

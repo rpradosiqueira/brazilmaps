@@ -15,14 +15,12 @@
 #' @author Renato Prado Siqueira \email{<rpradosiqueira@@gmail.com>}
 #' @seealso \code{\link{get_brmap}}
 #' @examples
-#' \dontrun{
 #' # Joining population estimates data to the year of 2017
 #' data("pop2017")
 #' municipios <- get_brmap(geo = "City", geo.filter = list(Region = 5),
 #'                         class = "SpatialPolygonsDataFrame")
+#'
 #' municipios <- join_data(municipios, pop2017, by = c("City" = "mun"))
-#' plot(municipios)
-#' }
 #'
 #' @keywords IBGE shapefile geographic levels spatial
 #' @importFrom magrittr %>%
