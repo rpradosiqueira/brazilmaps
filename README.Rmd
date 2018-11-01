@@ -45,7 +45,7 @@ library(brazilmaps)
 
 # Get de map
 midwest_cities <- get_brmap(geo = "City",
-                            geo.filter = list(Region = 5))
+                            geo_filter = list(Region = 5))
 
 # Plot
 plot_brmap(midwest_cities)

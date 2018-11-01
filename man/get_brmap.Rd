@@ -4,21 +4,22 @@
 \alias{get_brmap}
 \title{Get Brazilian maps from different geographic levels}
 \usage{
-get_brmap(geo = c("Brazil","Region","State","MesoRegion","MicroRegion","City"),
-                 geo.filter = NULL,
-                 class = c("sf", "SpatialPolygonsDataFrame", "data.frame"))
+get_brmap(geo = c("Brazil","Region","State", "Intermediary", "Imediate",
+                         "MesoRegion","MicroRegion","City"),
+                 geo_filter = NULL,
+                 as = c("sf", "SpatialPolygonsDataFrame", "data.frame"))
 }
 \arguments{
 \item{geo}{A string value with geographic levels of interest}
 
-\item{geo.filter}{A named list object with the specific item of the
+\item{geo_filter}{A named list object with the specific item of the
 geographic level or all itens of a determined higher geografic level}
 
-\item{class}{The class of the object to be returned}
+\item{as}{The class of the object to be returned}
 }
 \value{
 The function returns a 'sf', 'SpatialPolygonsDataFrame' or 'data.frame'
-  object depending of the 'class' argument informed
+  object depending of the 'as' argument informed
 }
 \description{
 Turn available to manipulation
@@ -31,20 +32,20 @@ configurations of 2016.
 }
 \details{
 The \code{geo} argument can be one of "Brazil", "Region", "State",
-"MesoRegion", "MicroRegion" and "City".
-'geo.filter' lists must be named with the same characters.
+"Intermediary", "Imediate", "MesoRegion", "MicroRegion" and "City".
+'geo_filter' lists must be named with the same characters.
 }
 \examples{
 ## Retrieving the map from the State of Rio de Janeiro
 rio_map <- get_brmap(geo = "State",
-                     geo.filter = list(State = 33),
-                     class = "sf")
+                     geo_filter = list(State = 33),
+                     as = "sf")
 plot_brmap(rio_map)
 
 ## Obtaining the municipalities maps from Midwest Region
 cities_map <- get_brmap(geo = "City",
-                        geo.filter = list(Region = 5),
-                        class = "sf")
+                        geo_filter = list(Region = 5),
+                        as = "sf")
 plot_brmap(cities_map)
 
 }

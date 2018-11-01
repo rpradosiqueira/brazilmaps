@@ -32,7 +32,7 @@ library(brazilmaps)
 
 # Get de map
 midwest_cities <- get_brmap(geo = "City",
-                            geo.filter = list(Region = 5))
+                            geo_filter = list(Region = 5))
 #> Warning: package 'bindrcpp' was built under R version 3.3.3
 
 # Plot

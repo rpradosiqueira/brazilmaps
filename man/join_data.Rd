@@ -27,8 +27,8 @@ on the maps from this package
 \examples{
 # Joining population estimates data to the year of 2017
 data("pop2017")
-municipios <- get_brmap(geo = "City", geo.filter = list(Region = 5),
-                        class = "SpatialPolygonsDataFrame")
+municipios <- get_brmap(geo = "City", geo_filter = list(Region = 5),
+                        as = "SpatialPolygonsDataFrame")
 
 municipios <- join_data(municipios, pop2017, by = c("City" = "mun"))
 
