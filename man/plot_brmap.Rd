@@ -52,7 +52,7 @@ mapa1 +
 # Only displaying the microregions of the state of Sao Paulo
 map_sp_micro <- get_brmap(geo = "MicroRegion",
                           geo_filter = list(State = 35),
-                          as = "SpatialPolygonsDataFrame")
+                          as = "sp")
 plot_brmap(map_sp_micro)
 
 }

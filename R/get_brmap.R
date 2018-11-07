@@ -11,7 +11,7 @@
 #' @usage get_brmap(geo = c("Brazil","Region","State", "Intermediary", "Imediate",
 #'                          "MesoRegion","MicroRegion","City"),
 #'                  geo_filter = NULL,
-#'                  as = c("sf", "SpatialPolygonsDataFrame", "data.frame"))
+#'                  as = c("sf", "sp", "data.frame"))
 #' @param geo A string value with geographic levels of interest
 #' @param geo_filter A named list object with the specific item of the
 #'   geographic level or all itens of a determined higher geografic level
@@ -20,7 +20,7 @@
 #' The \code{geo} argument can be one of "Brazil", "Region", "State",
 #' "Intermediary", "Imediate", "MesoRegion", "MicroRegion" and "City".
 #' 'geo_filter' lists must be named with the same characters.
-#' @return The function returns a 'sf', 'SpatialPolygonsDataFrame' or 'data.frame'
+#' @return The function returns a 'sf', 'sp' or 'data.frame'
 #'   object depending of the 'as' argument informed
 #' @author Renato Prado Siqueira \email{<rpradosiqueira@@gmail.com>}
 #' @seealso \code{\link{join_data}}
@@ -44,7 +44,7 @@
 
 get_brmap <- function(geo = c("Brazil","Region","State", "Intermediary", "Imediate", "MesoRegion","MicroRegion","City"),
                       geo_filter = NULL,
-                      as = c("sf", "SpatialPolygonsDataFrame", "data.frame")) {
+                      as = c("sf", "sp", "data.frame")) {
 
   geo <- match.arg(geo)
   as <- match.arg(as)
@@ -82,7 +82,7 @@ get_brmap <- function(geo = c("Brazil","Region","State", "Intermediary", "Imedia
 
   }
 
-  if (as == "SpatialPolygonsDataFrame") brmap <- as(brmap, "Spatial")
+  if (as == "sp") brmap <- as(brmap, "Spatial")
   if (as == "data.frame") brmap <- as(brmap, "Spatial") %>% ggplot2::fortify(region = geo)
 
   brmap

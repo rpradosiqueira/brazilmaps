@@ -7,7 +7,7 @@
 get_brmap(geo = c("Brazil","Region","State", "Intermediary", "Imediate",
                          "MesoRegion","MicroRegion","City"),
                  geo_filter = NULL,
-                 as = c("sf", "SpatialPolygonsDataFrame", "data.frame"))
+                 as = c("sf", "sp", "data.frame"))
 }
 \arguments{
 \item{geo}{A string value with geographic levels of interest}
@@ -18,7 +18,7 @@ geographic level or all itens of a determined higher geografic level}
 \item{as}{The class of the object to be returned}
 }
 \value{
-The function returns a 'sf', 'SpatialPolygonsDataFrame' or 'data.frame'
+The function returns a 'sf', 'sp' or 'data.frame'
   object depending of the 'as' argument informed
 }
 \description{
