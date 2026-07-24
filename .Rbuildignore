@@ -3,3 +3,10 @@
 ^README\.Rmd$
 ^README-.*\.png$
 ^cran-comments\.md$
+^data-raw$
+^\.github$
+^check$
+^check[0-9]*$
+^brazilmaps_.*\.tar\.gz$
+^inst/maps/municipality/.*\.properties$
+^inst/dtb/municipality-hierarchy\.csv$

@@ -1,0 +1,50 @@
+brazilmaps: copyright and data attribution
+============================================
+
+Package code
+------------
+
+Copyright (c) 2018-2026 Renato Prado Siqueira.
+
+The R source code, documentation written for this package and maintenance
+scripts are distributed under the GNU General Public License version 3
+(GPL-3), as declared in DESCRIPTION.
+
+Brazilian territorial meshes and hierarchy
+-------------------------------------------
+
+The bundled territorial geometries, geographic identifiers and territorial
+hierarchy are derived from data published by the Brazilian Institute of
+Geography and Statistics (Instituto Brasileiro de Geografia e Estatística,
+IBGE).
+
+Primary sources:
+
+* IBGE municipal mesh archive:
+  https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/
+* IBGE Localities API:
+  https://servicodados.ibge.gov.br/api/docs/localidades
+* IBGE open data information:
+  https://www.ibge.gov.br/acesso-informacao/dados-abertos.html
+
+The package author selected the bundled editions, standardized fields and
+coordinate reference systems, repaired invalid geometries, simplified the
+municipal meshes and encoded the installed objects as compressed TopoJSON.
+The exact source URLs and checksums for municipal editions are installed in
+maps/municipality/index.csv.
+
+The state_hex and state_region cartograms are curated representations created
+for this package from official state identifiers. They are not official IBGE
+territorial boundaries.
+
+Example datasets
+----------------
+
+The gini2015 and pop2017 example datasets are derived from data published by
+IBGE. The deaths example dataset is derived from data published by DATASUS,
+the Informatics Department of the Brazilian Unified Health System.
+
+Attribution of the original data remains with the respective public
+institutions. Inclusion in brazilmaps does not imply endorsement by IBGE or
+DATASUS. Users should consult the source institutions for the terms and
+metadata applicable to the original datasets.

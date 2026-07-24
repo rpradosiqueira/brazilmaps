@@ -3,27 +3,22 @@
 \docType{data}
 \name{pop2017}
 \alias{pop2017}
-\title{Population estimates (2017), city level}
-\format{A data frame with 5570 rows and 3 variables.}
+\title{Municipal population estimates in 2017}
+\format{
+A data frame with 5,570 rows and 3 variables:
+\describe{
+  \item{mun}{IBGE municipality code.}
+  \item{nome_mun}{Municipality name.}
+  \item{pop2017}{Estimated 2017 population.}
+}
+}
+\source{
+Brazilian Institute of Geography and Statistics (IBGE).
+}
 \usage{
-data(pop2017)
+pop2017
 }
 \description{
-IBGE's population estimates by municipality for 2017. \cr\cr
-  The data is formatted for easy merging with output from \code{\link[brazilmaps]{get_brmap}}.
+Example data containing 2017 municipal population estimates.
 }
-\details{
-\itemize{
-  \item \code{mun} The 7-digit code corresponding to the city.
-  \item \code{nome_mun} The city name.
-  \item \code{pop2017} The 2017 population estimate (in number of people)
-    for the corresponding city
-}
-}
-\references{
-\itemize{
-    \item \url{http://www.ibge.gov.br/home/estatistica/populacao/estimativa2017/default.shtm}
-    \item \url{http://www.ibge.gov.br/home/estatistica/populacao/estimativa2017/estimativa_dou.shtm}
-  }
-}
-\keyword{data}
+\keyword{datasets}

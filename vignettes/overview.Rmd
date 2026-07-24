@@ -1,0 +1,85 @@
+---
+title: "Using brazilmaps"
+author: "Renato Prado Siqueira"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using brazilmaps}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center"
+)
+```
+
+```{r packages}
+library(brazilmaps)
+```
+
+## Local spatial objects
+
+Every map returned by `get_brmap()` is installed with the package. No example
+in this vignette accesses the network.
+
+```{r current-map}
+states <- get_brmap("state")
+states
+```
+
+The default municipal map is the newest installed edition:
+
+```{r current-municipal}
+latest_year <- max(brmap_editions()$year)
+latest <- get_brmap("municipality")
+stopifnot(unique(latest$year) == latest_year)
+```
+
+## Filters use intersection
+
+A named list can contain one or several constraints. Constraints are combined
+with AND, so the following result contains only municipalities that satisfy
+both conditions:
+
+```{r filters}
+ms <- get_brmap(
+  "municipality",
+  filters = list(region = 5, state = 50)
+)
+unique(ms[c("region_code", "state_code")])
+```
+
+## Joins and plots
+
+```{r plot, fig.width=7, fig.height=4}
+data("gini2015")
+
+plot_brmap(
+  states,
+  data = gini2015,
+  by = c("state_code" = "cod"),
+  fill_by = "gini"
+)
+```
+
+For full control, use the returned object directly with `ggplot2::geom_sf()`.
+
+## Territorial hierarchy
+
+```{r hierarchy}
+get_dtb(name = "Campo Grande")
+get_dtb_levels(
+  c("municipality", "immediate_region"),
+  filters = list(state = 50)
+)
+```
+
+`microregion` and `mesoregion` are retained as discontinued historical IBGE
+divisions. `immediate_region` and `intermediate_region` are the current
+regional divisions.
+
+Legacy `sp` output remains available with `output = "sp"` when package `sp` is
+installed. New code should use the default `sf` output.

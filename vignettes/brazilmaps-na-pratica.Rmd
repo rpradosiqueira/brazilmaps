@@ -1,0 +1,409 @@
+---
+title: "brazilmaps na prática"
+author: "Renato Prado Siqueira"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{brazilmaps na prática}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.width = 7,
+  fig.height = 4,
+  dpi = 96,
+  dev.args = list(type = "cairo-png")
+)
+
+old_ctype <- Sys.getlocale("LC_CTYPE")
+if (
+  .Platform$OS.type == "windows" &&
+    old_ctype %in% c("C", "POSIX")
+) {
+  suppressWarnings(
+    try(Sys.setlocale("LC_CTYPE", "Portuguese_Brazil.utf8"), silent = TRUE)
+  )
+}
+```
+
+```{r packages}
+library(brazilmaps)
+library(ggplot2)
+```
+
+O `brazilmaps` fornece malhas territoriais simplificadas como objetos `sf`.
+Todos os mapas usados abaixo são instalados com o pacote: nenhum exemplo
+depende de conexão com a internet.
+
+Esta vignette apresenta um fluxo de trabalho completo, desde a escolha da
+divisão territorial até a construção de mapas temáticos. As geometrias são
+adequadas para visualização e análise exploratória, mas não para medições
+cadastrais ou decisões sobre limites legais.
+
+## Escolher o nível territorial
+
+`get_brmap()` usa nomes em *lower snake case*. Além do país, das grandes
+regiões e das unidades da federação, estão disponíveis regiões geográficas
+imediatas e intermediárias, municípios e duas divisões estatísticas
+descontinuadas pelo IBGE.
+
+```{r geographic-levels}
+levels <- c(
+  "country", "region", "state",
+  "intermediate_region", "immediate_region",
+  "municipality", "mesoregion", "microregion",
+  "state_hex", "state_region"
+)
+
+data.frame(level = levels)
+```
+
+O resultado padrão é um objeto `sf` em SIRGAS 2000 (EPSG:4674), pronto para
+uso com o ecossistema espacial do R.
+
+```{r state-object}
+states <- get_brmap("state")
+
+class(states)
+sf::st_crs(states)$input
+names(states)
+```
+
+Um mapa simples pode ser criado diretamente:
+
+```{r regions-map}
+regions <- get_brmap("region")
+
+plot_brmap(
+  regions,
+  fill_by = "name",
+  border_colour = "white",
+  border_linewidth = 0.5
+) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Grandes regiões do Brasil",
+    fill = NULL
+  )
+```
+
+## Recortar a área de interesse
+
+O argumento `filters` recebe uma lista nomeada de códigos territoriais. Quando
+há mais de uma condição, todas são aplicadas simultaneamente.
+
+```{r filters}
+pernambuco <- get_brmap(
+  "municipality",
+  filters = list(region = 2, state = 26)
+)
+
+unique(
+  sf::st_drop_geometry(pernambuco)[c("region_code", "state_code")]
+)
+```
+
+É possível sobrepor diferentes níveis porque todos usam o mesmo sistema de
+referência:
+
+```{r pernambuco-map, fig.height=3.8}
+pe_state <- get_brmap("state", filters = list(state = 26))
+
+ggplot() +
+  geom_sf(
+    data = pernambuco,
+    fill = "#d9ecf2",
+    colour = "white",
+    linewidth = 0.12
+  ) +
+  geom_sf(
+    data = pe_state,
+    fill = NA,
+    colour = "#174a5b",
+    linewidth = 0.65
+  ) +
+  labs(title = "Municípios de Pernambuco") +
+  theme_brmap()
+```
+
+Os mesmos filtros podem selecionar outras divisões. Por exemplo, o código de
+uma região imediata pode ser obtido na DTB e usado para recortar sua malha:
+
+```{r immediate-filter}
+recife_hierarchy <- get_dtb(name = "Recife")
+recife_hierarchy[
+  recife_hierarchy$level == "municipality",
+  c("municipality_name", "immediate_region_code", "immediate_region_name")
+]
+
+recife_immediate <- get_brmap(
+  "municipality",
+  filters = list(
+    immediate_region =
+      recife_hierarchy$immediate_region_code[
+        recife_hierarchy$level == "municipality"
+      ][1]
+  )
+)
+```
+
+```{r immediate-map, fig.height=3.8}
+plot_brmap(
+  recife_immediate,
+  fill = "#f4c95d",
+  border_colour = "white",
+  border_linewidth = 0.25
+) +
+  labs(title = "Região geográfica imediata do Recife")
+```
+
+## Juntar indicadores e criar mapas temáticos
+
+`plot_brmap()` pode juntar uma tabela ao mapa durante a plotagem. O vetor
+nomeado em `by` informa a coluna do mapa à esquerda e a coluna dos dados à
+direita.
+
+```{r state-indicator}
+data("gini2015")
+
+plot_brmap(
+  states,
+  data = gini2015,
+  by = c("state_code" = "cod"),
+  fill_by = "gini",
+  border_colour = "white",
+  border_linewidth = 0.3
+) +
+  scale_fill_viridis_c(
+    option = "C",
+    direction = -1,
+    na.value = "grey90"
+  ) +
+  labs(
+    title = "Índice de Gini por unidade da federação — 2015",
+    fill = "Gini"
+  )
+```
+
+Para reutilizar os atributos acrescentados em outras operações, faça a junção
+explicitamente com `join_brmap()`. O objeto continua sendo `sf`.
+
+```{r municipality-indicator}
+data("pop2017")
+
+pe_population <- join_brmap(
+  get_brmap(
+    "municipality",
+    year = 2023,
+    filters = list(state = 26)
+  ),
+  pop2017,
+  by = c("municipality_code" = "mun")
+)
+
+inherits(pe_population, "sf")
+```
+
+```{r population-map, fig.height=2.8}
+plot_brmap(
+  pe_population,
+  fill_by = "pop2017",
+  border_colour = "white",
+  border_linewidth = 0.12
+) +
+  scale_fill_viridis_c(
+    trans = "log10",
+    labels = function(x) {
+      format(
+        x,
+        big.mark = ".",
+        decimal.mark = ",",
+        scientific = FALSE,
+        trim = TRUE
+      )
+    },
+    na.value = "grey90"
+  ) +
+  labs(
+    title = "População municipal de Pernambuco — 2017",
+    subtitle = "Escala logarítmica",
+    fill = "Habitantes"
+  )
+```
+
+## Produzir um indicador a partir da hierarquia
+
+`get_dtb_levels()` relaciona códigos e nomes de diferentes níveis da Divisão
+Territorial Brasileira. Aqui, a função é usada para contar municípios por
+unidade da federação e levar o resultado de volta ao mapa.
+
+```{r hierarchy-count}
+municipality_state <- get_dtb_levels(c("municipality", "state"))
+
+municipality_count <- aggregate(
+  municipality_code ~ state_code,
+  data = municipality_state,
+  FUN = length
+)
+names(municipality_count)[2] <- "n_municipalities"
+
+states_with_count <- join_brmap(
+  states,
+  municipality_count,
+  by = "state_code"
+)
+```
+
+```{r hierarchy-count-map}
+plot_brmap(
+  states_with_count,
+  fill_by = "n_municipalities",
+  border_colour = "white",
+  border_linewidth = 0.3
+) +
+  scale_fill_viridis_c(option = "B", direction = -1) +
+  labs(
+    title = "Número de municípios por unidade da federação",
+    fill = "Municípios"
+  )
+```
+
+## Usar cartogramas
+
+O pacote inclui duas representações alternativas das unidades da federação.
+`state_hex` atribui a mesma área visual a cada unidade, sendo útil quando
+estados pequenos precisam ter o mesmo destaque dos demais. `state_region`
+organiza as unidades em blocos que realçam sua grande região.
+
+```{r cartograms-map, fig.width=8, fig.height=3.8}
+state_attributes <- sf::st_drop_geometry(states)[
+  c("state_code", "state_abbreviation")
+]
+
+state_hex <- join_brmap(
+  get_brmap("state_hex"),
+  state_attributes,
+  by = "state_code"
+)
+state_hex$cartogram <- "Hexagonal"
+
+state_region <- join_brmap(
+  get_brmap("state_region"),
+  state_attributes,
+  by = "state_code"
+)
+state_region$cartogram <- "Agrupado por região"
+
+state_cartograms <- rbind(state_hex, state_region)
+state_cartograms <- join_brmap(
+  state_cartograms,
+  gini2015,
+  by = c("state_code" = "cod")
+)
+
+cartogram_labels <- suppressWarnings(
+  sf::st_point_on_surface(state_cartograms)
+)
+label_coordinates <- sf::st_coordinates(cartogram_labels)
+cartogram_labels$x <- label_coordinates[, "X"]
+cartogram_labels$y <- label_coordinates[, "Y"]
+cartogram_labels <- sf::st_drop_geometry(cartogram_labels)
+
+ggplot(state_cartograms) +
+  geom_sf(
+    aes(fill = gini),
+    colour = "white",
+    linewidth = 0.5
+  ) +
+  geom_text(
+    data = cartogram_labels,
+    aes(x = x, y = y, label = state_abbreviation),
+    colour = "grey15",
+    fontface = "bold",
+    size = 2.1
+  ) +
+  facet_wrap(vars(cartogram), nrow = 1) +
+  scale_fill_viridis_c(
+    option = "C",
+    direction = -1,
+    na.value = "grey90"
+  ) +
+  labs(
+    title = "Índice de Gini em dois cartogramas estaduais",
+    fill = "Gini"
+  ) +
+  theme_brmap() +
+  theme(
+    strip.text = element_text(face = "bold"),
+    panel.spacing = grid::unit(0.7, "lines")
+  )
+```
+
+Os dois painéis usam exatamente a mesma variável e a mesma escala de cores.
+Para mapas geográficos convencionais, use `state`.
+
+## Personalizar e exportar
+
+`plot_brmap()` devolve um `ggplot`. Portanto, escalas, títulos, anotações,
+facetas e temas podem ser acrescentados normalmente.
+
+```{r customize}
+map <- plot_brmap(
+  get_brmap("state", filters = list(region = 4)),
+  fill = "#92c5de",
+  border_colour = "#1f4e5f",
+  border_linewidth = 0.45
+) +
+  labs(
+    title = "Região Sul",
+    subtitle = "Malhas locais e simplificadas do brazilmaps",
+    caption = "Sistema de referência: SIRGAS 2000"
+  ) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.caption = element_text(colour = "grey40")
+  )
+
+map
+```
+
+O objeto pode ser salvo com as funções usuais do `ggplot2`:
+
+```{r export, eval=FALSE}
+ggsave(
+  "regiao-sul.png",
+  plot = map,
+  width = 8,
+  height = 6,
+  dpi = 300
+)
+```
+
+## Malhas municipais históricas
+
+O ano mais recente é usado por padrão. As edições municipais instaladas podem
+ser consultadas com `brmap_editions()` e selecionadas pelo argumento `year`.
+
+```{r editions}
+brmap_editions()[c("year", "n_features")]
+
+goias_2000 <- get_brmap(
+  "municipality",
+  year = 2000,
+  filters = list(state = 52)
+)
+```
+
+Para critérios de seleção das edições, comparações temporais e limitações da
+classificação histórica, consulte a vignette
+`vignette("historical-municipal-meshes", package = "brazilmaps")`.
+
+```{r restore-locale, include=FALSE}
+if (!identical(Sys.getlocale("LC_CTYPE"), old_ctype)) {
+  suppressWarnings(Sys.setlocale("LC_CTYPE", old_ctype))
+}
+```

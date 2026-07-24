@@ -3,25 +3,22 @@
 \docType{data}
 \name{deaths}
 \alias{deaths}
-\title{Number of deaths (2015), microregion level}
-\format{A data frame with 580 rows and 3 variables.}
+\title{Municipal deaths in Brazil}
+\format{
+A data frame with 558 rows and 3 variables:
+\describe{
+  \item{cod}{IBGE microregion code.}
+  \item{micro}{Microregion name.}
+  \item{ndeaths}{Registered deaths.}
+}
+}
+\source{
+DATASUS.
+}
 \usage{
-data(deaths)
+deaths
 }
 \description{
-DATASUS' registry of deaths from IBGE's brazilian microregions for 2015. \cr\cr
-  The data is formatted for easy merging with output from \code{\link[brazilmaps]{get_brmap}}.
+Example municipal mortality data.
 }
-\details{
-\itemize{
-  \item \code{cod} The 5-digit code corresponding to the microregion.
-  \item \code{micro} The microregion name.
-  \item \code{ndeaths} The 2015 absolut number of deaths
-}
-}
-\references{
-\itemize{
-    \item \url{http://datasus.saude.gov.br/informacoes-de-saude/tabnet}
-  }
-}
-\keyword{data}
+\keyword{datasets}

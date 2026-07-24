@@ -1,0 +1,82 @@
+---
+title: "Historical municipal meshes"
+author: "Renato Prado Siqueira"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Historical municipal meshes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center"
+)
+```
+
+```{r packages}
+library(brazilmaps)
+```
+
+## Inventory
+
+`brmap_editions()` is the authoritative installed inventory. It records feature
+counts, compressed file sizes, checksums, processing metadata and exact IBGE
+source URLs.
+
+```{r inventory}
+inventory <- brmap_editions()
+inventory[c("year", "n_features", "md5")]
+```
+
+Every row represents a bundled milestone. Within each consecutive run with
+the same municipality count, the package keeps only the latest official
+edition. This preserves every change in the number of municipalities while
+leaving more space for less aggressive geometry simplification.
+
+## Select an edition
+
+```{r editions}
+mesh_2000 <- get_brmap("municipality", year = 2000)
+mesh_2010 <- get_brmap("municipality", year = 2010)
+mesh_current <- get_brmap("municipality")
+
+c(
+  `2000` = nrow(mesh_2000),
+  `2010` = nrow(mesh_2010),
+  current = nrow(mesh_current)
+)
+```
+
+An unavailable year produces an informative error instead of silently
+substituting another edition.
+
+## Compare a state through time
+
+```{r compare, fig.width=7, fig.height=3.5}
+go_2000 <- get_brmap(
+  "municipality", year = 2000, filters = list(state = 52)
+)
+go_current <- get_brmap("municipality", filters = list(state = 52))
+
+plot_brmap(go_2000) +
+  ggplot2::labs(title = "Municipal mesh of Goiás — 2000")
+```
+
+The geometry is simplified consistently for visualization, retaining 5% of
+weighted Visvalingam vertices. Do not calculate legal areas or cadastral
+boundaries from these objects.
+
+## Hierarchy and historical codes
+
+`state_code` and `region_code` are stored with each edition. Immediate,
+intermediate, microregion and mesoregion fields are attached from the
+installed current DTB when a municipality code can be matched. Consequently,
+filtering a historical edition by a current regional division is a
+present-day classification of the historical geometry, not a reconstruction
+of that division in the selected year.
+
+All objects are returned in SIRGAS 2000 (EPSG:4674), including early meshes
+whose source datum was SAD69.

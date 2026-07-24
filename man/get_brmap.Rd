@@ -2,61 +2,56 @@
 % Please edit documentation in R/get_brmap.R
 \name{get_brmap}
 \alias{get_brmap}
-\title{Get Brazilian maps from different geographic levels}
+\title{Get a Brazilian territorial map}
 \usage{
-get_brmap(geo = c("Brazil","Region","State", "Intermediary", "Imediate",
-                         "MesoRegion","MicroRegion","City"),
-                 geo_filter = NULL,
-                 as = c("sf", "sp", "data.frame"))
+get_brmap(
+  level = "country",
+  filters = NULL,
+  output = c("sf", "data.frame", "sp"),
+  year = NULL,
+  geo = NULL,
+  geo_filter = NULL,
+  as = NULL,
+  geo.filter = NULL,
+  class = NULL
+)
 }
 \arguments{
-\item{geo}{A string value with geographic levels of interest}
+\item{level}{Geographic level in lower snake case. One of `"country"`,
+`"region"`, `"state"`, `"state_hex"`, `"state_region"`,
+`"intermediate_region"`, `"immediate_region"`, `"mesoregion"`,
+`"microregion"` or `"municipality"`.}
 
-\item{geo_filter}{A named list object with the specific item of the
-geographic level or all itens of a determined higher geografic level}
+\item{filters}{Optional named list of code filters. Level shorthands such as
+`list(region = 5, state = 50)` are accepted and combined with logical AND.}
 
-\item{as}{The class of the object to be returned}
+\item{output}{Output type: `"sf"`, `"data.frame"` or `"sp"`.}
+
+\item{year}{Bundled municipal mesh edition. `NULL` selects the most recent
+edition. Historical years are available only for municipalities.}
+
+\item{geo, geo_filter, as}{Deprecated aliases for `level`, `filters` and
+`output`.}
+
+\item{geo.filter, class}{Older deprecated aliases for `filters` and
+`output`.}
 }
 \value{
-The function returns a 'sf', 'sp' or 'data.frame'
-  object depending of the 'as' argument informed
+An `sf` object by default. `"data.frame"` removes the geometry;
+  `"sp"` returns a legacy `Spatial` object and requires package `sp`.
 }
 \description{
-Turn available to manipulation
-brazilian maps in various type
-of geographic levels. The maps
-are from IBGE (Instituto Brasileiro
-de Geografia e Estatística) and
-refers to the administrative
-configurations of 2016.
-}
-\details{
-The \code{geo} argument can be one of "Brazil", "Region", "State",
-"Intermediary", "Imediate", "MesoRegion", "MicroRegion" and "City".
-'geo_filter' lists must be named with the same characters.
+Returns a simplified territorial mesh shipped with the package. No network
+connection is used. Municipal meshes can be selected by milestone edition
+year; other levels represent the current edition.
 }
 \examples{
-## Retrieving the map from the State of Rio de Janeiro
-rio_map <- get_brmap(geo = "State",
-                     geo_filter = list(State = 33),
-                     as = "sf")
-plot_brmap(rio_map)
-
-## Obtaining the municipalities maps from Midwest Region
-cities_map <- get_brmap(geo = "City",
-                        geo_filter = list(Region = 5),
-                        as = "sf")
-plot_brmap(cities_map)
-
+rio <- get_brmap("state", filters = list(state = 33))
+municipalities_2010 <- get_brmap(
+  "municipality", year = 2010, filters = list(region = 5)
+)
+plot_brmap(rio)
 }
 \seealso{
-\code{\link{join_data}}
+[brmap_editions()], [join_brmap()], [plot_brmap()]
 }
-\author{
-Renato Prado Siqueira \email{<rpradosiqueira@gmail.com>}
-}
-\keyword{IBGE}
-\keyword{geographic}
-\keyword{levels}
-\keyword{shapefile}
-\keyword{spatial}

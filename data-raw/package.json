@@ -1,0 +1,8 @@
+{
+  "name": "brazilmaps-data-maintenance",
+  "private": true,
+  "description": "Pinned maintenance dependency for rebuilding bundled meshes",
+  "dependencies": {
+    "mapshaper": "0.6.113"
+  }
+}

@@ -1,135 +1,138 @@
-#' Facilitated plot of brazilian maps
+#' Plot a Brazilian map
 #'
-#' A wrapper in order to facilitate the plot
-#' of the maps from this package. The function
-#' returns a ggplot object so it can be edited
-#' easily.
+#' Creates a `ggplot` using [ggplot2::geom_sf()]. The returned object can be
+#' extended with any regular ggplot2 layer, scale or label.
 #'
-#' @usage plot_brmap(map, data_to_join = data.frame(), join_by = NULL,
-#'   var = "values", theme = theme_map())
-#' @param map An object of class 'sf', 'SpatialPolygonsDataFrame' or 'data.frame'
-#' @param data_to_join A data frame containing values to plot on the map.
-#' @param join_by A character vector of variables to join by.
-#' @param var The name of the column that contains the values of the field to
-#'   be plotted. The default is \code{"value"}.
-#' @param theme The theme that should be used for plotting the map. The default
-#'   is \code{\link[ggthemes]{theme_map}}.
-#' @return A \code{\link[ggplot2]{ggplot}} object that contains a basic
-#'   brazilian map with the described parameters. Since the result is a \code{ggplot}
-#'   object, it can be extended with more \code{geom} layers, scales, labels,
-#'   themes, etc.
+#' @param map An `sf` or legacy `Spatial` polygon object.
+#' @param data Optional data frame to join before plotting.
+#' @param by Join specification accepted by [dplyr::left_join()].
+#' @param fill_by Optional single column name mapped to polygon fill.
+#' @param theme A complete or partial ggplot2 theme.
+#' @param border_colour Polygon border colour.
+#' @param border_linewidth Polygon border width.
+#' @param fill Constant fill used when `fill_by` is `NULL`.
+#' @param data_to_join,join_by,var Deprecated aliases for `data`, `by` and
+#'   `fill_by`.
 #'
-#' @seealso \code{\link{get_brmap}}, \code{\link[ggplot2]{theme}}
-#'
+#' @return A `ggplot` object.
+#' @seealso [get_brmap()], [join_brmap()]
+#' @importFrom rlang .data
 #' @examples
-#' ## Plotting population estimates (2017) of the South Region
 #' data("pop2017")
-#' map_sul <- get_brmap(geo = "City", geo_filter = list(Region = 4))
-#' mapa1 <- plot_brmap(map_sul,
-#'                     data_to_join = pop2017,
-#'                     join_by = c("City" = "mun"),
-#'                     var = "pop2017")
-#' mapa1
-#'
-#' # Output is ggplot object so it can be extended
-#' # with any number of ggplot layers
-#' library(ggplot2)
-#' mapa1 +
-#'   labs(title = "População Municipal 2017 - Região Sul")
-#'
-#'
-#' # Only displaying the microregions of the state of Sao Paulo
-#' map_sp_micro <- get_brmap(geo = "MicroRegion",
-#'                           geo_filter = list(State = 35),
-#'                           as = "sp")
-#' plot_brmap(map_sp_micro)
-#'
+#' south <- get_brmap(
+#'   "municipality", year = 2023, filters = list(region = 4)
+#' )
+#' plot_brmap(
+#'   south,
+#'   data = pop2017,
+#'   by = c("municipality_code" = "mun"),
+#'   fill_by = "pop2017"
+#' )
 #' @export
-
-plot_brmap <- function(map,
-                       data_to_join = data.frame(),
-                       join_by = NULL,
-                       var = "values",
-                       theme = theme_map()) {
-
-
-  if (nrow(data_to_join) != 0) {
-
-    map <- join_data(map = map, data = data_to_join, by = join_by)
-
-  if (any(class(map) == "sf")) {
-
-    map_ggplot <- as(map, "Spatial")
-    map_ggplot@data$id = row.names(map_ggplot@data)
-
-    map_ggplot_df <- suppressMessages( ggplot2::fortify(map_ggplot) )
-    map_ggplot_df <- dplyr::left_join(map_ggplot_df, map_ggplot@data, by = "id")
-
-  } else if (class(map) == "SpatialPolygonsDataFrame") {
-
-    map_ggplot <- map
-    map_ggplot@data$id = row.names(map_ggplot@data)
-
-    map_ggplot_df <- suppressMessages( ggplot2::fortify(map_ggplot) )
-    map_ggplot_df <- dplyr::left_join(map_ggplot_df, map_ggplot@data, by = "id")
-
+plot_brmap <- function(
+    map,
+    data = NULL,
+    by = NULL,
+    fill_by = NULL,
+    theme = theme_brmap(),
+    border_colour = "grey30",
+    border_linewidth = 0.15,
+    fill = "white",
+    data_to_join = NULL,
+    join_by = NULL,
+    var = NULL) {
+  if (!is.null(data_to_join)) {
+    if (!is.null(data)) {
+      stop(
+        "Use only one of `data` and deprecated `data_to_join`.",
+        call. = FALSE
+      )
+    }
+    .warn_deprecated("data_to_join", "data")
+    data <- data_to_join
+  }
+  if (!is.null(join_by)) {
+    if (!is.null(by)) {
+      stop("Use only one of `by` and deprecated `join_by`.",
+        call. = FALSE
+      )
+    }
+    .warn_deprecated("join_by", "by")
+    by <- join_by
+  }
+  if (!is.null(var)) {
+    if (!is.null(fill_by)) {
+      stop("Use only one of `fill_by` and deprecated `var`.",
+        call. = FALSE
+      )
+    }
+    .warn_deprecated("var", "fill_by")
+    fill_by <- var
   }
 
-    ggplot2::ggplot() +
-      ggplot2::geom_polygon(ggplot2::aes(fill = map_ggplot_df[[var]], x = map_ggplot_df$long, y = map_ggplot_df$lat, group = map_ggplot_df$group),
-                            data = map_ggplot_df,
-                            color = "black",
-                            size = 0.2) +
-      ggplot2::coord_fixed() +
-      ggplot2::labs(fill = var) +
-      theme_map()
+  if (inherits(map, "Spatial")) {
+    map <- sf::st_as_sf(map)
+  }
+  if (!inherits(map, "sf")) {
+    stop("`map` must be an sf or Spatial polygon object.", call. = FALSE)
+  }
+  if (!is.null(data) && !is.data.frame(data)) {
+    stop("`data` must be NULL or a data frame.", call. = FALSE)
+  }
+  if (!is.null(data) && nrow(data) > 0L) {
+    map <- join_brmap(map, data, by = by)
+  }
+  if (!is.null(fill_by) &&
+      (length(fill_by) != 1L || is.na(fill_by))) {
+    stop(
+      "`fill_by` must be NULL or a single column name.",
+      call. = FALSE
+    )
+  }
+  if (!is.null(fill_by) && !fill_by %in% names(map)) {
+    stop(sprintf("Column `%s` was not found in `map`.", fill_by),
+      call. = FALSE
+    )
+  }
 
+  if (is.null(fill_by)) {
+    plot <- ggplot2::ggplot(map) +
+      ggplot2::geom_sf(
+        colour = border_colour,
+        linewidth = border_linewidth,
+        fill = fill
+      )
   } else {
-
-    if (any(class(map) == "sf")) map <- as(map, "Spatial") %>% ggplot2::fortify()
-    if (class(map) == "SpatialPolygonsDataFrame") map <- map %>% ggplot2::fortify()
-
-    ggplot2::ggplot() +
-      ggplot2::geom_polygon(ggplot2::aes(x = map$long, y = map$lat, group = map$group),
-                            data = map,
-                            color = "black",
-                            size = 0.2,
-                            fill = "white") +
-      ggplot2::coord_fixed() +
-      theme_map()
-
+    plot <- ggplot2::ggplot(map) +
+      ggplot2::geom_sf(
+        ggplot2::aes(fill = .data[[fill_by]]),
+        colour = border_colour,
+        linewidth = border_linewidth
+      ) +
+      ggplot2::labs(fill = fill_by)
   }
-
+  plot + theme
 }
 
-#' This creates a nice map theme for use in plot_usmap.
-#' It is borrowed from the usmap package that borrowed from the
-#' ggthemes package located at this repository:
-#'    https://github.com/jrnold/ggthemes
+#' Minimal theme for Brazilian maps
 #'
-#' This function was manually rewritten here to avoid the need for
-#'  another package import.
-#'
-#' All theme functions (i.e. theme_bw, theme, element_blank, %+replace%)
-#'  come from ggplot2.
-#'
-#' @keywords internal
+#' @param base_size Base font size.
+#' @param base_family Base font family.
+#' @return A ggplot2 theme.
+#' @export
+theme_brmap <- function(base_size = 9, base_family = "") {
+  ggplot2::theme_void(base_size = base_size, base_family = base_family) +
+    ggplot2::theme(
+      legend.justification = c(0, 0),
+      legend.position = "inside",
+      legend.position.inside = c(0.01, 0.01)
+    )
+}
+
+#' @rdname theme_brmap
+#' @usage theme_map(base_size = 9, base_family = "")
+#' @export
 theme_map <- function(base_size = 9, base_family = "") {
-  elementBlank = ggplot2::element_blank()
-  `%+replace%` <- ggplot2::`%+replace%`
-  unit <- ggplot2::unit
-
-  ggplot2::theme_bw(base_size = base_size, base_family = base_family) %+replace%
-    ggplot2::theme(axis.line = elementBlank,
-                   axis.text = elementBlank,
-                   axis.ticks = elementBlank,
-                   axis.title = elementBlank,
-                   panel.background = elementBlank,
-                   panel.border = elementBlank,
-                   panel.grid = elementBlank,
-                   panel.spacing = unit(0, "lines"),
-                   plot.background = elementBlank,
-                   legend.justification = c(0, 0),
-                   legend.position = c(0, 0))
+  .Deprecated("theme_brmap")
+  theme_brmap(base_size = base_size, base_family = base_family)
 }
-

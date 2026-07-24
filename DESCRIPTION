@@ -1,24 +1,39 @@
 Package: brazilmaps
 Type: Package
 Title: Brazilian Maps from Different Geographic Levels
-Version: 0.2.0
-Authors@R: person("Renato", "Prado Siqueira", email = "rpradosiqueira@gmail.com", role = c("aut", "cre"))
-Description: Obtain Brazilian map spatial objects of varying
-    region types (e.g. cities, states, microregions, mesoregions).
-    Convenience functions for plotting choropleths and working with
-    the geographic codes are also provided.
-Depends: R (>= 3.2.0)
+Version: 1.0.0
+Authors@R:
+    person("Renato", "Prado Siqueira",
+           email = "rpradosiqueira@gmail.com",
+           role = c("aut", "cre"))
+Copyright: Package code (c) 2018-2026 Renato Prado Siqueira.
+    See inst/COPYRIGHTS for bundled data attribution.
+Description: Provides simplified Brazilian territorial meshes derived from
+    official data published by the Brazilian Institute of Geography and
+    Statistics (IBGE) <https://www.ibge.gov.br/> as local spatial objects,
+    with no download required at use time. Municipal meshes cover selected
+    official editions from 2000 onwards whenever the number of municipalities
+    changes, and current meshes are available for states, regions and other
+    geographic levels. Convenience functions support filtering, joining and
+    plotting the maps, as well as consulting Brazilian territorial codes.
+Depends:
+    R (>= 4.1.0)
 LazyData: true
+LazyDataCompression: xz
 License: GPL-3
 Encoding: UTF-8
-URL: http://github.com/rpradosiqueira/brazilmaps
-BugReports: http://github.com/rpradosiqueira/brazilmaps/issues
+URL: https://github.com/rpradosiqueira/brazilmaps
+BugReports: https://github.com/rpradosiqueira/brazilmaps/issues
 Imports:
     dplyr,
-    ggplot2,
-    magrittr,
-    methods,
-    sf,
+    ggplot2 (>= 3.5.0),
+    rlang,
+    sf
+Suggests:
+    knitr,
+    rmarkdown,
     sp,
-RoxygenNote: 6.0.1
-Suggests: knitr
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0

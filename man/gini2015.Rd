@@ -3,26 +3,22 @@
 \docType{data}
 \name{gini2015}
 \alias{gini2015}
-\title{Gini index (2015), state level}
-\format{A data frame with 27 rows and 3 variables.}
+\title{Municipal Gini index in 2015}
+\format{
+A data frame with 27 rows and 3 variables:
+\describe{
+  \item{cod}{IBGE state code.}
+  \item{uf}{State name.}
+  \item{gini}{Gini index.}
+}
+}
+\source{
+Brazilian Institute of Geography and Statistics (IBGE).
+}
 \usage{
-data(gini2015)
+gini2015
 }
 \description{
-IBGE's Gini index of the monthly income distribution of persons 15 years of age
-  or over, with income for 2015. \cr\cr
-  The data is formatted for easy merging with output from \code{\link[brazilmaps]{get_brmap}}.
+Example data containing the 2015 municipal Gini index.
 }
-\details{
-\itemize{
-  \item \code{cod} The 2-digit code corresponding to the state.
-  \item \code{uf} The state name.
-  \item \code{gini} The 2015 Gini Index
-}
-}
-\references{
-\itemize{
-    \item \url{http://www.ibge.gov.br/home/estatistica/pesquisas/pesquisa_resultados.php?id_pesquisa=40}
-  }
-}
-\keyword{data}
+\keyword{datasets}

@@ -1,0 +1,20 @@
+* text=auto
+
+*.R text eol=lf
+*.Rmd text eol=lf
+*.md text eol=lf
+*.Rd text eol=lf
+*.csv text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+DESCRIPTION text eol=lf
+NAMESPACE text eol=lf
+.Rbuildignore text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+*.rda binary
+*.rds binary
+*.gz binary
+*.png binary

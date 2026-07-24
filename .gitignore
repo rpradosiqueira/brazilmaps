@@ -2,3 +2,10 @@
 .Rhistory
 .RData
 .Ruserdata
+inst/doc
+data-raw/cache
+data-raw/work
+data-raw/node_modules
+check
+*.Rcheck
+*.tar.gz

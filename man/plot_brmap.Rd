@@ -2,60 +2,61 @@
 % Please edit documentation in R/plot_brmap.R
 \name{plot_brmap}
 \alias{plot_brmap}
-\title{Facilitated plot of brazilian maps}
+\title{Plot a Brazilian map}
 \usage{
-plot_brmap(map, data_to_join = data.frame(), join_by = NULL,
-  var = "values", theme = theme_map())
+plot_brmap(
+  map,
+  data = NULL,
+  by = NULL,
+  fill_by = NULL,
+  theme = theme_brmap(),
+  border_colour = "grey30",
+  border_linewidth = 0.15,
+  fill = "white",
+  data_to_join = NULL,
+  join_by = NULL,
+  var = NULL
+)
 }
 \arguments{
-\item{map}{An object of class 'sf', 'SpatialPolygonsDataFrame' or 'data.frame'}
+\item{map}{An `sf` or legacy `Spatial` polygon object.}
 
-\item{data_to_join}{A data frame containing values to plot on the map.}
+\item{data}{Optional data frame to join before plotting.}
 
-\item{join_by}{A character vector of variables to join by.}
+\item{by}{Join specification accepted by [dplyr::left_join()].}
 
-\item{var}{The name of the column that contains the values of the field to
-be plotted. The default is \code{"value"}.}
+\item{fill_by}{Optional single column name mapped to polygon fill.}
 
-\item{theme}{The theme that should be used for plotting the map. The default
-is \code{\link[ggthemes]{theme_map}}.}
+\item{theme}{A complete or partial ggplot2 theme.}
+
+\item{border_colour}{Polygon border colour.}
+
+\item{border_linewidth}{Polygon border width.}
+
+\item{fill}{Constant fill used when `fill_by` is `NULL`.}
+
+\item{data_to_join, join_by, var}{Deprecated aliases for `data`, `by` and
+`fill_by`.}
 }
 \value{
-A \code{\link[ggplot2]{ggplot}} object that contains a basic
-  brazilian map with the described parameters. Since the result is a \code{ggplot}
-  object, it can be extended with more \code{geom} layers, scales, labels,
-  themes, etc.
+A `ggplot` object.
 }
 \description{
-A wrapper in order to facilitate the plot
-of the maps from this package. The function
-returns a ggplot object so it can be edited
-easily.
+Creates a `ggplot` using [ggplot2::geom_sf()]. The returned object can be
+extended with any regular ggplot2 layer, scale or label.
 }
 \examples{
-## Plotting population estimates (2017) of the South Region
 data("pop2017")
-map_sul <- get_brmap(geo = "City", geo_filter = list(Region = 4))
-mapa1 <- plot_brmap(map_sul,
-                    data_to_join = pop2017,
-                    join_by = c("City" = "mun"),
-                    var = "pop2017")
-mapa1
-
-# Output is ggplot object so it can be extended
-# with any number of ggplot layers
-library(ggplot2)
-mapa1 +
-  labs(title = "População Municipal 2017 - Região Sul")
-
-
-# Only displaying the microregions of the state of Sao Paulo
-map_sp_micro <- get_brmap(geo = "MicroRegion",
-                          geo_filter = list(State = 35),
-                          as = "sp")
-plot_brmap(map_sp_micro)
-
+south <- get_brmap(
+  "municipality", year = 2023, filters = list(region = 4)
+)
+plot_brmap(
+  south,
+  data = pop2017,
+  by = c("municipality_code" = "mun"),
+  fill_by = "pop2017"
+)
 }
 \seealso{
-\code{\link{get_brmap}}, \code{\link[ggplot2]{theme}}
+[get_brmap()], [join_brmap()]
 }
