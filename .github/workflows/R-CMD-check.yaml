@@ -42,6 +42,10 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
+      - name: Install XQuartz for macOS graphics devices
+        if: runner.os == 'macOS'
+        run: brew install --cask xquartz
+
       - uses: r-lib/actions/setup-tinytex@v2
         if: matrix.config.latex
 
