@@ -10,8 +10,10 @@ brmap_editions()
 brmap_years()
 }
 \value{
-A data frame with edition year, feature count, file size, checksum,
-  source and processing metadata.
+A data frame with one row per installed edition and columns `year`,
+  `n_features`, `file_bytes`, `md5`, `crs`, `simplification` and `source`.
+  `source` contains the exact official IBGE archive URL or URLs used by the
+  maintenance pipeline.
 }
 \description{
 Returns the inventory generated with the spatial files. The package bundles

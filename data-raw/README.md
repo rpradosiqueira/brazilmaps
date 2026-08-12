@@ -25,6 +25,14 @@ edition is bundled. The pipeline:
    geometries, feature-count changes or an unexpected CRS;
 9. records source URLs, file size and MD5 checksum in the installed index.
 
+Maintenance downloads default to `data-raw/cache/`, and disposable extraction
+and mapshaper files default to `data-raw/work/`. Set `BRAZILMAPS_CACHE_DIR` or
+`BRAZILMAPS_WORK_DIR` to explicit alternative directories when the package
+checkout should not hold those files. Downloads are written to temporary
+`.part` files, validated as ZIP or JSON content, and only then replace a cached
+or installed artifact. Extraction directories are recreated for every archive
+so stale shapefiles cannot enter a rebuild.
+
 Maintenance dependencies (`sf`, Node.js and the pinned `mapshaper` CLI) are
 deliberately not runtime dependencies.
 
@@ -45,3 +53,9 @@ and writes every current map as quantized, topology-preserving compressed
 TopoJSON without additional geometry simplification.
 Microregions and mesoregions are retained as discontinued historical divisions;
 the curated state cartograms are also preserved.
+
+The regular package tests are intentionally offline. The scheduled/manual
+`Source smoke test` workflow performs one Localities API request and one HEAD
+request for the latest municipal archive, with timeouts and a schema/count
+fingerprint. Maintainers must still run the two rebuild scripts before replacing
+bundled data.

@@ -2,6 +2,13 @@ test_that("the selected municipal milestones are installed", {
   expected <- c(2000L, 2001L, 2007L, 2010L, 2023L, 2025L)
   inventory <- brmap_editions()
 
+  expect_named(
+    inventory,
+    c(
+      "year", "n_features", "file_bytes", "md5", "crs",
+      "simplification", "source"
+    )
+  )
   expect_identical(inventory$year, expected)
   expect_identical(
     inventory$n_features,
@@ -11,6 +18,7 @@ test_that("the selected municipal milestones are installed", {
   expect_true(all(inventory$file_bytes > 0))
   expect_true(all(nzchar(inventory$md5)))
   expect_true(all(nzchar(inventory$source)))
+  expect_true(all(inventory$crs == "EPSG:4674"))
   expect_true(all(grepl("5%", inventory$simplification, fixed = TRUE)))
 
   paths <- system.file(
@@ -35,6 +43,16 @@ test_that("the selected municipal milestones are installed", {
       identical(sf::st_crs(mesh), sf::st_crs(4674)) &&
       all(sf::st_is_valid(mesh))
   }, logical(1))))
+})
+
+test_that("the in-session cache does not change filtered results", {
+  full_before <- get_brmap("state")
+  selected <- get_brmap("state", filters = list(state = 50))
+  full_after <- get_brmap("state")
+
+  expect_equal(nrow(selected), 1L)
+  expect_equal(selected$state_code, 50L)
+  expect_identical(full_after, full_before)
 })
 
 test_that("current and historical meshes load locally", {

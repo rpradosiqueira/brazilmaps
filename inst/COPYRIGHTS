@@ -24,6 +24,8 @@ Primary sources:
   https://geoftp.ibge.gov.br/organizacao_do_territorio/malhas_territoriais/malhas_municipais/
 * IBGE Localities API:
   https://servicodados.ibge.gov.br/api/docs/localidades
+* Exact Localities API query used for the current hierarchy snapshot:
+  https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=id
 * IBGE open data information:
   https://www.ibge.gov.br/acesso-informacao/dados-abertos.html
 
@@ -32,6 +34,12 @@ coordinate reference systems, repaired invalid geometries, simplified the
 municipal meshes and encoded the installed objects as compressed TopoJSON.
 The exact source URLs and checksums for municipal editions are installed in
 maps/municipality/index.csv.
+
+The retrieval date of the currently bundled Localities API snapshot was not
+recorded in the historical build. Its edition is identified by the validated
+contents (5,571 municipalities, 510 immediate regions and 133 intermediate
+regions), including Boa Esperança do Norte. A future data refresh must record
+its retrieval timestamp before replacing the snapshot.
 
 The state_hex and state_region cartograms are curated representations created
 for this package from official state identifiers. They are not official IBGE
@@ -43,6 +51,11 @@ Example datasets
 The gini2015 and pop2017 example datasets are derived from data published by
 IBGE. The deaths example dataset is derived from data published by DATASUS,
 the Informatics Department of the Brazilian Unified Health System.
+
+The exact source files, retrieval dates and source-specific licensing metadata
+for these three legacy example datasets were not retained. They are included
+for package examples and tests, but must not be externally republished as
+standalone datasets until that provenance gap is resolved.
 
 Attribution of the original data remains with the respective public
 institutions. Inclusion in brazilmaps does not imply endorsement by IBGE or

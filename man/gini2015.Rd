@@ -3,7 +3,7 @@
 \docType{data}
 \name{gini2015}
 \alias{gini2015}
-\title{Municipal Gini index in 2015}
+\title{State Gini index in 2015}
 \format{
 A data frame with 27 rows and 3 variables:
 \describe{
@@ -19,6 +19,6 @@ Brazilian Institute of Geography and Statistics (IBGE).
 gini2015
 }
 \description{
-Example data containing the 2015 municipal Gini index.
+Example data containing the 2015 Gini index by state.
 }
 \keyword{datasets}

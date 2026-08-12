@@ -1,0 +1,33 @@
+name: Source smoke test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 9 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: brazilmaps-source-smoke
+  cancel-in-progress: false
+
+jobs:
+  sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - name: Install the single smoke-test dependency
+        shell: Rscript {0}
+        run: install.packages("jsonlite")
+
+      - name: Probe current IBGE sources
+        run: Rscript data-raw/source-smoke.R

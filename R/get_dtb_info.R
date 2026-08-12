@@ -7,9 +7,10 @@
 #' @param name Optional vector of territory names. Matching ignores case and
 #'   surrounding whitespace.
 #'
-#' @return A data frame. If both arguments are `NULL`, the complete table is
-#'   returned. If both are supplied, rows matching either condition are
-#'   returned.
+#' @return A data frame. If both arguments are `NULL`, the complete bundled
+#'   snapshot is returned. If both are supplied, rows matching either
+#'   condition are returned. A query with no matches returns zero rows while
+#'   preserving the complete column schema.
 #' @seealso [get_dtb_levels()]
 #' @examples
 #' get_dtb(code = c(50, 5002704, 1))
@@ -40,6 +41,9 @@ get_dtb <- function(code = NULL, name = NULL) {
   }
 
   result <- dtb[keep, , drop = FALSE]
+  if (!nrow(result)) {
+    return(result)
+  }
   used <- vapply(result, function(column) any(!is.na(column)), logical(1))
   result[, used, drop = FALSE]
 }

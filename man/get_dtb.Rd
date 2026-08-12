@@ -13,9 +13,10 @@ get_dtb(code = NULL, name = NULL)
 surrounding whitespace.}
 }
 \value{
-A data frame. If both arguments are `NULL`, the complete table is
-  returned. If both are supplied, rows matching either condition are
-  returned.
+A data frame. If both arguments are `NULL`, the complete bundled
+  snapshot is returned. If both are supplied, rows matching either
+  condition are returned. A query with no matches returns zero rows while
+  preserving the complete column schema.
 }
 \description{
 Looks up territorial identifiers and their hierarchy in the version of the

@@ -1,6 +1,6 @@
-#' Municipal deaths in Brazil
+#' Microregional deaths in Brazil
 #'
-#' Example municipal mortality data.
+#' Example mortality data for the discontinued IBGE microregions.
 #'
 #' @format A data frame with 558 rows and 3 variables:
 #' \describe{
@@ -11,9 +11,9 @@
 #' @source DATASUS.
 "deaths"
 
-#' Municipal Gini index in 2015
+#' State Gini index in 2015
 #'
-#' Example data containing the 2015 municipal Gini index.
+#' Example data containing the 2015 Gini index by state.
 #'
 #' @format A data frame with 27 rows and 3 variables:
 #' \describe{

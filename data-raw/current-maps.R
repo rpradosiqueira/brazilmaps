@@ -13,25 +13,87 @@ stopifnot(
 )
 options(timeout = max(1800, getOption("timeout")))
 
+maintenance_cache_dir <- Sys.getenv(
+  "BRAZILMAPS_CACHE_DIR",
+  unset = file.path("data-raw", "cache")
+)
+maintenance_work_dir <- Sys.getenv(
+  "BRAZILMAPS_WORK_DIR",
+  unset = file.path("data-raw", "work")
+)
+
+replace_file <- function(candidate, destination) {
+  backup <- paste0(destination, ".bak")
+  if (file.exists(backup)) {
+    if (!file.exists(destination)) {
+      if (!file.rename(backup, destination)) {
+        stop("Could not recover previous file ", destination, call. = FALSE)
+      }
+    } else {
+      unlink(backup)
+    }
+  }
+  had_destination <- file.exists(destination)
+  if (had_destination && !file.rename(destination, backup)) {
+    stop("Could not preserve existing file ", destination, call. = FALSE)
+  }
+  if (!file.rename(candidate, destination)) {
+    if (had_destination) {
+      file.rename(backup, destination)
+    }
+    stop("Could not move completed file to ", destination, call. = FALSE)
+  }
+  if (had_destination) {
+    unlink(backup)
+  }
+  invisible(destination)
+}
+
+download_localities <- function(url, destination) {
+  partial <- paste0(destination, ".part")
+  unlink(partial)
+  on.exit(unlink(partial), add = TRUE)
+  status <- utils::download.file(
+    url, partial, mode = "wb", quiet = TRUE
+  )
+  if (!identical(status, 0L) ||
+      !file.exists(partial) ||
+      file.info(partial)[["size"]] == 0) {
+    stop("Download failed or was empty: ", url, call. = FALSE)
+  }
+  municipalities <- tryCatch(
+    read_localities(partial),
+    error = function(error) {
+      stop(
+        "The IBGE Localities response is not valid JSON: ",
+        conditionMessage(error), call. = FALSE
+      )
+    }
+  )
+  replace_file(partial, destination)
+  municipalities
+}
+
+read_localities <- function(path) {
+  jsonlite::fromJSON(path, simplifyVector = FALSE)
+}
+
 localities_url <- paste0(
   "https://servicodados.ibge.gov.br/api/v1/localidades/",
   "municipios?orderBy=id"
 )
-cache_dir <- file.path("data-raw", "cache", "current")
+cache_dir <- file.path(maintenance_cache_dir, "current")
 dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
 localities_path <- file.path(cache_dir, "municipalities.json")
-if (!file.exists(localities_path) || file.info(localities_path)[["size"]] == 0) {
-  partial <- paste0(localities_path, ".part")
-  utils::download.file(localities_url, partial, mode = "wb", quiet = TRUE)
-  if (file.exists(localities_path)) {
-    unlink(localities_path)
-  }
-  stopifnot(file.rename(partial, localities_path))
+municipalities <- if (file.exists(localities_path) &&
+    file.info(localities_path)[["size"]] > 0) {
+  try(read_localities(localities_path), silent = TRUE)
+} else {
+  structure("cache missing", class = "try-error")
 }
-
-municipalities <- jsonlite::fromJSON(
-  localities_path, simplifyVector = FALSE
-)
+if (inherits(municipalities, "try-error")) {
+  municipalities <- download_localities(localities_url, localities_path)
+}
 
 value_or_na <- function(object, field, type = c("integer", "character")) {
   type <- match.arg(type)
@@ -304,7 +366,7 @@ if (!nzchar(node)) {
 }
 
 topology_workspace <- file.path(
-  "data-raw", "work", "current", "mapshaper"
+  maintenance_work_dir, "current", "mapshaper"
 )
 dir.create(topology_workspace, recursive = TRUE, showWarnings = FALSE)
 
@@ -398,8 +460,7 @@ write_current_topojson <- function(
     max(feature_area_error, na.rm = TRUE) <= max_area_error
   )
 
-  unlink(output)
-  stopifnot(file.rename(partial, output))
+  replace_file(partial, output)
   unlink(file.path(map_dir, paste0(stem, ".rds")))
   output
 }

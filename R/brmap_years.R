@@ -5,8 +5,10 @@
 #' municipality count. All listed editions are installed and read locally by
 #' [get_brmap()].
 #'
-#' @return A data frame with edition year, feature count, file size, checksum,
-#'   source and processing metadata.
+#' @return A data frame with one row per installed edition and columns `year`,
+#'   `n_features`, `file_bytes`, `md5`, `crs`, `simplification` and `source`.
+#'   `source` contains the exact official IBGE archive URL or URLs used by the
+#'   maintenance pipeline.
 #' @examples
 #' brmap_editions()
 #' @export

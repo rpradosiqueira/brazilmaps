@@ -43,7 +43,16 @@ An `sf` object by default. `"data.frame"` removes the geometry;
 \description{
 Returns a simplified territorial mesh shipped with the package. No network
 connection is used. Municipal meshes can be selected by milestone edition
-year; other levels represent the current edition.
+year; other levels represent the current bundled snapshot. Parsed maps are
+cached only in memory for the duration of the R session.
+}
+\details{
+The meshes are intended for thematic mapping, exploratory analysis
+  and joins. They are not suitable for cadastral work, legal boundary
+  decisions or precise area and perimeter measurement. Historical
+  municipal geometries receive current immediate, intermediate, microregion
+  and mesoregion attributes when their municipality codes can be matched to
+  the bundled current DTB.
 }
 \examples{
 rio <- get_brmap("state", filters = list(state = 33))

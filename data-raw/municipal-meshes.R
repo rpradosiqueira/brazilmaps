@@ -13,6 +13,42 @@ stopifnot(
 )
 options(timeout = max(1800, getOption("timeout")))
 
+maintenance_cache_dir <- Sys.getenv(
+  "BRAZILMAPS_CACHE_DIR",
+  unset = file.path("data-raw", "cache")
+)
+maintenance_work_dir <- Sys.getenv(
+  "BRAZILMAPS_WORK_DIR",
+  unset = file.path("data-raw", "work")
+)
+
+replace_file <- function(candidate, destination) {
+  backup <- paste0(destination, ".bak")
+  if (file.exists(backup)) {
+    if (!file.exists(destination)) {
+      if (!file.rename(backup, destination)) {
+        stop("Could not recover previous file ", destination, call. = FALSE)
+      }
+    } else {
+      unlink(backup)
+    }
+  }
+  had_destination <- file.exists(destination)
+  if (had_destination && !file.rename(destination, backup)) {
+    stop("Could not preserve existing file ", destination, call. = FALSE)
+  }
+  if (!file.rename(candidate, destination)) {
+    if (had_destination) {
+      file.rename(backup, destination)
+    }
+    stop("Could not move completed file to ", destination, call. = FALSE)
+  }
+  if (had_destination) {
+    unlink(backup)
+  }
+  invisible(destination)
+}
+
 ibge_base <- paste0(
   "https://geoftp.ibge.gov.br/organizacao_do_territorio/",
   "malhas_territoriais/malhas_municipais"
@@ -123,31 +159,44 @@ municipal_urls <- function(year) {
 }
 
 download_source <- function(url, year) {
-  destination_dir <- file.path("data-raw", "cache", as.character(year))
+  destination_dir <- file.path(maintenance_cache_dir, as.character(year))
   dir.create(destination_dir, recursive = TRUE, showWarnings = FALSE)
   destination <- file.path(destination_dir, basename(url))
-  zip_ok <- file.exists(destination) &&
-    !inherits(
-      try(utils::unzip(destination, list = TRUE), silent = TRUE),
-      "try-error"
-    )
+  valid_zip <- function(path) {
+    if (!file.exists(path) || file.info(path)[["size"]] <= 0) {
+      return(FALSE)
+    }
+    contents <- try(utils::unzip(path, list = TRUE), silent = TRUE)
+    !inherits(contents, "try-error") && nrow(contents) > 0L
+  }
+  zip_ok <- valid_zip(destination)
   if (!zip_ok) {
     message("Downloading ", url)
     partial <- paste0(destination, ".part")
-    utils::download.file(url, partial, mode = "wb", quiet = TRUE)
-    if (file.exists(destination)) {
-      unlink(destination)
+    unlink(partial)
+    on.exit(unlink(partial), add = TRUE)
+    status <- utils::download.file(
+      url, partial, mode = "wb", quiet = TRUE
+    )
+    if (!identical(status, 0L) || !valid_zip(partial)) {
+      stop(
+        "Download failed or was not a readable ZIP archive: ",
+        url, call. = FALSE
+      )
     }
-    if (!file.rename(partial, destination)) {
-      stop("Could not move completed download to ", destination, call. = FALSE)
-    }
+    replace_file(partial, destination)
   }
   destination
 }
 
 read_zip_shape <- function(zip_path, year) {
   identifier <- tools::file_path_sans_ext(basename(zip_path))
-  destination <- file.path("data-raw", "work", as.character(year), identifier)
+  destination <- file.path(
+    maintenance_work_dir, as.character(year), identifier
+  )
+  if (dir.exists(destination)) {
+    unlink(destination, recursive = TRUE)
+  }
   dir.create(destination, recursive = TRUE, showWarnings = FALSE)
   extracted <- try(
     utils::unzip(zip_path, exdir = destination),
@@ -331,7 +380,9 @@ write_topojson <- function(mesh, year, keep = 0.05, quantization = 1e6) {
     )
   }
 
-  workspace <- file.path("data-raw", "work", as.character(year), "mapshaper")
+  workspace <- file.path(
+    maintenance_work_dir, as.character(year), "mapshaper"
+  )
   dir.create(workspace, recursive = TRUE, showWarnings = FALSE)
   input <- normalizePath(
     file.path(workspace, sprintf("City_%d.geojson", year)),
@@ -476,8 +527,12 @@ write_topojson <- function(mesh, year, keep = 0.05, quantization = 1e6) {
   output_dir <- file.path("inst", "maps", "municipality")
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
   output <- file.path(output_dir, sprintf("City_%d.topojson.gz", year))
+  candidate_output <- paste0(output, ".part")
+  unlink(candidate_output)
   input_connection <- file(topology, open = "rb")
-  output_connection <- gzfile(output, open = "wb", compression = 9)
+  output_connection <- gzfile(
+    candidate_output, open = "wb", compression = 9
+  )
   repeat {
     bytes <- readBin(input_connection, what = "raw", n = 1024L * 1024L)
     if (!length(bytes)) {
@@ -487,7 +542,7 @@ write_topojson <- function(mesh, year, keep = 0.05, quantization = 1e6) {
   }
   close(input_connection)
   close(output_connection)
-  output
+  candidate_output
 }
 
 validate_output <- function(path, year, expected_rows) {
@@ -547,8 +602,11 @@ build_municipal_year <- function(year) {
       call. = FALSE
     )
   }
-  output <- write_topojson(mesh, year)
-  installed <- validate_output(output, year, nrow(mesh))
+  candidate_output <- write_topojson(mesh, year)
+  on.exit(unlink(candidate_output), add = TRUE)
+  installed <- validate_output(candidate_output, year, nrow(mesh))
+  output <- sub("\\.part$", "", candidate_output)
+  replace_file(candidate_output, output)
 
   data.frame(
     year = as.integer(year),

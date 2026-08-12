@@ -1,3 +1,17 @@
+# brazilmaps (development version)
+
+* Preserved the complete public API while making unmatched DTB queries return
+  a schema-stable zero-row data frame.
+* Documented runtime and maintenance cache behavior, source-provenance gaps and
+  the exact fields in the municipal edition inventory.
+* Made maintenance downloads validate temporary ZIP or JSON files before
+  replacing cached artifacts, allowed explicit cache/work directories and
+  prevented stale extraction files from entering rebuilds.
+* Split CI into a fast Ubuntu release check for pushes and pull requests and a
+  comprehensive cross-platform check available on demand.
+* Added a separate scheduled/manual, rate-limited smoke test for the live IBGE
+  source schema and latest municipal archive.
+
 # brazilmaps 1.0.0
 
 ## Spatial data

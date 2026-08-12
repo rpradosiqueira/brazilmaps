@@ -43,17 +43,17 @@ decisions or precise area/perimeter measurement.
 
 ## Installation
 
-Install the released version from CRAN:
-
-``` r
-install.packages("brazilmaps")
-```
-
-Or install the development version:
+Install the current development version from GitHub:
 
 ``` r
 # install.packages("pak")
 pak::pak("rpradosiqueira/brazilmaps")
+```
+
+The CRAN release can be installed with:
+
+``` r
+install.packages("brazilmaps")
 ```
 
 ## Geographic levels
@@ -103,6 +103,14 @@ plot_brmap(
 
 `join_brmap()` preserves `sf`, and `plot_brmap()` returns a regular
 `ggplot` that can be extended with ggplot2 layers and scales.
+
+## Offline and cache behavior
+
+All user-facing functions read installed files and never contact IBGE
+or any other network service. Parsed maps are cached only in memory for
+the current R session; `brazilmaps` does not create a persistent user
+cache. Maintainer-only downloads under `data-raw/` use a separate cache
+whose location can be changed with `BRAZILMAPS_CACHE_DIR`.
 
 ## Territorial codes
 

@@ -80,6 +80,20 @@ test_that("DTB includes the corrected current hierarchy", {
   expect_true(5002704 %in% campo_grande$code)
 })
 
+test_that("DTB queries with no matches preserve the table schema", {
+  complete <- get_dtb()
+  no_code_match <- get_dtb(code = -1)
+  no_name_match <- get_dtb(name = "not a Brazilian territory")
+
+  expect_equal(nrow(no_code_match), 0L)
+  expect_equal(nrow(no_name_match), 0L)
+  expect_identical(names(no_code_match), names(complete))
+  expect_identical(names(no_name_match), names(complete))
+  expect_identical(vapply(no_code_match, typeof, character(1)),
+    vapply(complete, typeof, character(1))
+  )
+})
+
 test_that("DTB level relationships are type-stable", {
   result <- get_dtb_levels(
     c("municipality", "state", "region"),

@@ -3,7 +3,7 @@
 \docType{data}
 \name{deaths}
 \alias{deaths}
-\title{Municipal deaths in Brazil}
+\title{Microregional deaths in Brazil}
 \format{
 A data frame with 558 rows and 3 variables:
 \describe{
@@ -19,6 +19,6 @@ DATASUS.
 deaths
 }
 \description{
-Example municipal mortality data.
+Example mortality data for the discontinued IBGE microregions.
 }
 \keyword{datasets}
