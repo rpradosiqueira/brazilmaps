@@ -9,3 +9,4 @@ data-raw/node_modules
 check
 *.Rcheck
 *.tar.gz
+inst/maps/municipality/*.topojson.gz.properties
